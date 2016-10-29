@@ -7,6 +7,10 @@
 #### Compiled files ###
 dist
 
+#### Log files ###
+yarn-error.log
+npm-debug.log*
+
 ### Dependencies ###
 node_modules
 
