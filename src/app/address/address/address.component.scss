@@ -1,0 +1,13 @@
+.container{
+  filter {
+    min-width: 30vw;
+    height: 100vh;
+  }
+  map {
+    min-width: 70vw;
+    height: 100vh;
+  }
+
+  display: flex;
+  align-items: center;
+}
