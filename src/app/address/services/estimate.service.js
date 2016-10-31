@@ -19,7 +19,7 @@ class EstimateService {
     lon: 0
   };
 
-  _radius;
+  _radius = 500;
 
   constructor($http, $rootScope) {
     this.$http = $http;
