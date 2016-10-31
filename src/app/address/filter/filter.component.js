@@ -12,8 +12,17 @@ class FilterComponent {
     return this.estimateService.params;
   }
 
+  get radius() {
+    return this.estimateService.radius;
+  }
+
+  set radius(value) {
+    this.estimateService.radius = value;
+    console.log(this.estimateService.radius);
+  }
+
   select() {
-    console.log(this.estimateParams);
+    this.estimateService.send();
   }
 }
 
