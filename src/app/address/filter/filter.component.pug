@@ -1,4 +1,6 @@
 div(class="{{::$ctrl.styles.container}}")
+  span Выберете радиус(метры)
+  md-slider.md-primary(flex='', md-discrete='', ng-model='$ctrl.radius', step='500', min='500', max='5000', aria-label='rating')
   span.title Выберите интересующие вас категории:
   span Парки
   md-slider.md-primary(flex='', md-discrete='', ng-model='$ctrl.estimateParams.parks', step='1', min='0', max='5', aria-label='rating')
