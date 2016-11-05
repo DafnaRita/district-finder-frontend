@@ -5,7 +5,7 @@ class EstimateService {
   $rootScope;
 
   params = {
-    parks: 3,
+    parks: 0,
     malls: 0,
     schools: 0,
     sportCenters: 0,
@@ -21,14 +21,24 @@ class EstimateService {
 
   _radius = 500;
 
+  northPoint;
+
   constructor($http, $rootScope) {
     this.$http = $http;
     this.$rootScope = $rootScope;
   }
 
-  setCoordinates(lat, lot) {
+  setCoordinates(lat, lon) {
     this.coordinates.lat = lat;
-    this.coordinates.lot = lot;
+    this.coordinates.lon = lon;
+  }
+
+  setNorthPoint(northPoint) {
+    this.northPoint = northPoint;
+  }
+
+  getCoordinatesAsArray() {
+    return [this.coordinates.lat, this.coordinates.lon];
   }
 
   get radius() {
@@ -49,6 +59,7 @@ class EstimateService {
         ]
       },
       radius: this.radius,
+      northPoint: this.northPoint.endPoint,
       estimateParams: [
         {
           type: ParamEnum.parks,
