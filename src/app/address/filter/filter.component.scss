@@ -10,10 +10,17 @@
   md-slider {
     width: 80%;
   }
+}
 
-  :global(.title){
-    margin-top: 10px;
-    margin-bottom: 15px;
-    font-size: 18px;
-  }
+.importance{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 80%;
+}
+
+.title {
+  margin-top: 10px;
+  margin-bottom: 15px;
+  font-size: 18px;
 }
