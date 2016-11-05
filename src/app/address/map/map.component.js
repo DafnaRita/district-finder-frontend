@@ -51,6 +51,7 @@ class MapComponent {
 
     // Добавляем круг на карту.
     map.geoObjects.add(this.circle);
+    this.addClickListener(map, this.circle);
   }
 
   drawPlasemark(map, coords) {
@@ -74,33 +75,45 @@ class MapComponent {
 
     this.map.then((map) => {
       this.coordSystem = map.options.get('projection').getCoordSystem();
-      console.log(this.coordSystem);
-      map.events.add('click', (e) => {
+        map.behaviors.disable('dblClickZoom','rightMouseButtonMagnifier','leftMouseButtonMagnifier');
+        console.log(this.coordSystem);
+        this.addClickListener(map, map);
+
+
+    });
+  }
+
+  getNorthPoint() {
+    return this.coordSystem.solveDirectProblem(
+      this.estimateService.getCoordinatesAsArray(),
+      getDirection(0), // движемся на север
+      this.estimateService.radius);
+  }
+
+  addClickListener(map, obj) {
+    obj.events.add('click', (e) => {
+      try {
         // Получение координат щелчка
         const coords = e.get('coords');
-
         map.geoObjects.removeAll();
         this.drawPlasemark(map, coords);
 
         this.estimateService.setCoordinates(coords[0], coords[1]);
-        const northPoint = this.coordSystem.solveDirectProblem(
-          this.estimateService.getCoordinatesAsArray(),
-          getDirection(0), // движемся на север
-          this.estimateService.radius);
+        const northPoint = this.getNorthPoint();
         this.estimateService.setNorthPoint(northPoint);
-        console.log(northPoint);
         this.drawCircle(map, coords, this.estimateService.radius);
-      });
+      }
+      catch(error){
+        console.log('error!!!');
+        // странная яндекс-ошибка, никак на нас не влияющая
+      }
     });
   }
-
-  getNorthPoint
   _listen() {
     this.$scope.$on('changeRadius',(_, raduis) => {
       if(!this.circle) {
         return;
       }
-
           this.circle.geometry.setRadius(raduis);
     });
   }
