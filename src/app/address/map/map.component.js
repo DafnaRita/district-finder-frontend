@@ -9,6 +9,7 @@ class MapComponent {
   map;
   estimateService;
   circle;
+  coordSystem;
 
   constructor($element, $q, $scope, estimateService) {
     this.$element = $element;
@@ -72,16 +73,25 @@ class MapComponent {
     });
 
     this.map.then((map) => {
+      this.coordSystem = map.options.get('projection').getCoordSystem();
+      console.log(this.coordSystem);
       map.events.add('click', (e) => {
         // Получение координат щелчка
         const coords = e.get('coords');
+        console.log(coords);
         map.geoObjects.removeAll();
         this.drawPlasemark(map, coords);
+
         this.estimateService.setCoordinates(coords[0], coords[1]);
+        const northPoint = this.coordSystem.solveDirectProblem(
+          this.estimateService.getCoordinatesAsArray(),
+          getDirection(0), // движемся на севере
+          this.estimateService.radius);
+        this.estimateService.setNorthPoint(northPoint);
+        console.log(northPoint);
         this.drawCircle(map, coords, this.estimateService.radius);
       });
     });
-
   }
 
   _listen() {
@@ -89,7 +99,8 @@ class MapComponent {
       if(!this.circle) {
         return;
       }
-      this.circle.geometry.setRadius(raduis);
+
+          this.circle.geometry.setRadius(raduis);
     });
   }
 }
@@ -103,3 +114,7 @@ export default {
     controller: MapComponent
   }
 };
+
+function getDirection (azimuth) {
+  return [Math.cos(azimuth), Math.sin(azimuth)];
+}
