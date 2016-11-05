@@ -55,7 +55,7 @@ class EstimateService {
       target: {
         coordinates: [
           this.coordinates.lat,
-          this.coordinates.lot
+          this.coordinates.lon
         ]
       },
       radius: this.radius,

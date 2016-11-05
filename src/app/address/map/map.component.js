@@ -78,14 +78,14 @@ class MapComponent {
       map.events.add('click', (e) => {
         // Получение координат щелчка
         const coords = e.get('coords');
-        console.log(coords);
+
         map.geoObjects.removeAll();
         this.drawPlasemark(map, coords);
 
         this.estimateService.setCoordinates(coords[0], coords[1]);
         const northPoint = this.coordSystem.solveDirectProblem(
           this.estimateService.getCoordinatesAsArray(),
-          getDirection(0), // движемся на севере
+          getDirection(0), // движемся на север
           this.estimateService.radius);
         this.estimateService.setNorthPoint(northPoint);
         console.log(northPoint);
@@ -94,6 +94,7 @@ class MapComponent {
     });
   }
 
+  getNorthPoint
   _listen() {
     this.$scope.$on('changeRadius',(_, raduis) => {
       if(!this.circle) {
