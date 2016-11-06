@@ -3,6 +3,7 @@ import {ParamEnum} from '../utils';
 class EstimateService {
   $http;
   $rootScope;
+  $q;
 
   params = {
     parks: 0,
@@ -19,13 +20,15 @@ class EstimateService {
     lon: 0
   };
 
-  _radius = 500;
-
   northPoint;
 
-  constructor($http, $rootScope) {
+  _radius = 500;
+  _area;
+
+  constructor($http, $rootScope, $q) {
     this.$http = $http;
     this.$rootScope = $rootScope;
+    this.$q = $q;
   }
 
   setCoordinates(lat, lon) {
@@ -50,8 +53,93 @@ class EstimateService {
     this.$rootScope.$broadcast('changeRadius', this._radius);
   }
 
-  send() {
-    var data = {
+  getEstimatedArea() {
+    this.$q.resolve({
+      "estimate": "4.5",
+      "target": {
+        "address": "5-я линия Васильевского острова, 30В",
+        "coordinates": [
+          59.941506,
+          30.282262
+        ]
+      },
+      "infrastructure": [
+        {
+          "address": "Санкт-Петербург, В.О., линия 2-я, 43",
+          "name": "Британская школа Ila Aspect",
+          "type": 3,
+          "coordinates": [
+            59.94581,
+            30.282747
+          ]
+        },
+        {
+          "address": "Санкт-Петербург, 5-я линия В. О., 16/17, литер А",
+          "name": "Школа № 21 им. Э.П. Шаффе",
+          "type": 3,
+          "coordinates": [
+            59.940568,
+            30.284661
+          ]
+        },
+        {
+          "address": "Санкт-Петербург, В.О., Средний просп., 28/29, литера А, пом. 32Н",
+          "name": "Частная школа Ювента",
+          "type": 3,
+          "coordinates": [
+            59.943129,
+            30.279325
+          ]
+        },
+        {
+          "address": "Санкт-Петербург, Волжский пер., 11",
+          "name": "Православная общеобразовательная школа Семьи Шостаковичей",
+          "type": 3,
+          "coordinates": [
+            59.940807,
+            30.283232
+          ]
+        },
+        {
+          "address": "Санкт-Петербург, 6-я линия В. О., 15Литера Д",
+          "name": "Частная школа Шостаковичей",
+          "type": 3,
+          "coordinates": [
+            59.940731,
+            30.281831
+          ]
+        },
+        {
+          "address": "Санкт-Петербург, 2-я линия В. О., 43",
+          "name": "Британский школа Аспект",
+          "type": 3,
+          "coordinates": [
+            59.94581,
+            30.282747
+          ]
+        },
+        {
+          "address": "Санкт-Петербург, 2-я линия В. О., 43",
+          "name": "НОУ Международная языковая академия Аспект Британская школа Аспект",
+          "type": 3,
+          "coordinates": [
+            59.94581,
+            30.282747
+          ]
+        }
+      ]
+    })
+      .then((data) => {
+        this.$rootScope.$broadcast('estimatedArea', data);
+      });
+    /*this.$http.post('/get_query', this.getRestData())
+     .then((response) => {
+     response.data =
+     });*/
+  }
+
+  getRestData() {
+    return {
       target: {
         coordinates: [
           this.coordinates.lat,
@@ -91,11 +179,10 @@ class EstimateService {
         }
       ]
     };
-    this.$http.post('/get_query', data);
   }
 }
 
-EstimateService.$inject = ['$http','$rootScope'];
+EstimateService.$inject = ['$http', '$rootScope', '$q'];
 
 export default {
   name: 'estimateService',
