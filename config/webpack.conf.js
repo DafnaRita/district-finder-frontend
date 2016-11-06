@@ -91,6 +91,13 @@ module.exports = {
       {
         test: /\.pug$/,
         loader: 'pug-html-loader'
+      },
+      { // Image loader
+        test: /\.svg$/,
+        loader: 'file-loader',
+        options: {
+          name: 'icons/[name].[ext]'
+        }
       }
     ]
   },
@@ -117,9 +124,6 @@ module.exports = {
         path: path.resolve(projectRoot, 'dist'),
         filename: '[name].js'
       }
-      /*postcss: [
-        require('autoprefixer')()
-      ]*/
     })
   ],
   node: {

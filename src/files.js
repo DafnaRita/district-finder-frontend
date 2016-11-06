@@ -1,3 +1,10 @@
 import 'normalize.css/normalize.css';
 import 'angular-material/angular-material.min.css';
-//import './assets/styles.scss';
+import './assets/0.svg';
+import './assets/1.svg';
+import './assets/2.svg';
+import './assets/3.svg';
+import './assets/4.svg';
+import './assets/5.svg';
+import './assets/6.svg';
+import './assets/pikachu.svg';
