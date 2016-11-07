@@ -18,11 +18,10 @@ class FilterComponent {
 
   set radius(value) {
     this.estimateService.radius = value;
-    console.log(this.estimateService.radius);
   }
 
   select() {
-    this.estimateService.send();
+    this.estimateService.getEstimatedArea();
   }
 }
 

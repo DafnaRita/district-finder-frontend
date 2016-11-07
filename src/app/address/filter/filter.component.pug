@@ -8,15 +8,33 @@ div(class="{{::$ctrl.styles.container}}")
     span интересно
   md-slider.md-primary(flex='', md-disтcrete='', ng-model='$ctrl.estimateParams.parks', step='1', min='0', max='5', aria-label='rating')
   span Торговые центры
+  div(class="{{::$ctrl.styles.importance}}")
+    span не интересно
+    span интересно
   md-slider.md-primary(flex='', md-discrete='', ng-model='$ctrl.estimateParams.malls', step='1', min='0', max='5', aria-label='rating')
   span Школы
+  div(class="{{::$ctrl.styles.importance}}")
+    span не интересно
+    span интересно
   md-slider.md-primary(flex='', md-discrete='', ng-model='$ctrl.estimateParams.schools', step='1', min='0', max='5', aria-label='rating')
   span Спорткомплексы
+  div(class="{{::$ctrl.styles.importance}}")
+    span не интересно
+    span интересно
   md-slider.md-primary(flex='', md-discrete='', ng-model='$ctrl.estimateParams.sportCenters', step='1', min='0', max='5', aria-label='rating')
   span Досуговые центры
+  div(class="{{::$ctrl.styles.importance}}")
+    span не интересно
+    span интересно
   md-slider.md-primary(flex='', md-discrete='', ng-model='$ctrl.estimateParams.rest', step='1', min='0', max='5', aria-label='rating')
   span Больницы
+  div(class="{{::$ctrl.styles.importance}}")
+    span не интересно
+    span интересно
   md-slider.md-primary(flex='', md-discrete='', ng-model='$ctrl.estimateParams.hospitals', step='1', min='0', max='5', aria-label='rating')
   span Детские сады
+  div(class="{{::$ctrl.styles.importance}}")
+    span не интересно
+    span интересно
   md-slider.md-primary(flex='', md-discrete='', ng-model='$ctrl.estimateParams.kindergarten', step='1', min='0', max='5', aria-label='rating')
-  md-button.md-raised.md-primary(ng-click='$ctrl.select()') Выбрать!
+  md-button.md-raised.md-primary(ng-click='$ctrl.select()') Поиск лучшего дома
