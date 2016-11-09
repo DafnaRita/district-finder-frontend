@@ -98,7 +98,7 @@ class MapComponent {
         iconImageSize: [30, 42],
         // Смещение левого верхнего угла иконки относительно
         // её "ножки" (точки привязки).
-        iconImageOffset: [-3, -42]}));
+        iconImageOffset: [-3, -3]}));
   }
 
   $onInit() {
@@ -160,6 +160,7 @@ class MapComponent {
     this.$scope.$on('estimatedArea', (_, data) => {
       this.map.then((map) => {
         for(const address of data.infrastructure) {
+          map.geoObjects.removeAll();
           console.log(address);
           this.drawPlacemarkByType(map, address.coordinates, address.type);
         }
