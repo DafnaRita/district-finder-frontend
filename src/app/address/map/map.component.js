@@ -160,7 +160,6 @@ class MapComponent {
 
     this.$scope.$on('estimatedArea', (_, data) => {
       this.map.then((map) => {
-        map.geoObjects.removeAll();
         for(const address of data.infrastructure) {
           console.log(address);
           this.drawPlacemarkByType(map, address.coordinates, address.type);
