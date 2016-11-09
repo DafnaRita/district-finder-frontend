@@ -155,6 +155,7 @@ class MapComponent {
         return;
       }
       this.circle.geometry.setRadius(raduis);
+      this.estimateService.setNorthPoint(this.getNorthPoint());
     });
 
     this.$scope.$on('estimatedArea', (_, data) => {
