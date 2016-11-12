@@ -12,6 +12,7 @@ class MapComponent {
   circle;
   coordSystem;
   placemarkCollection;
+  district;
 
   constructor($element, $q, $scope, estimateService) {
     this.$element = $element;
@@ -57,7 +58,8 @@ class MapComponent {
   }
 
   drawPlacemark(map, coords) {
-    map.geoObjects.add(new ymaps.Placemark(coords));
+    var placemark = new ymaps.Placemark(coords);
+    map.geoObjects.add(placemark);
   }
 
   getSvgByParamType(type) {
@@ -75,7 +77,7 @@ class MapComponent {
       case 6:
         return 'icons/health.svg';
       case 7:
-        return 'icons/kindengartner.svg';
+        return 'icons/kindergartn.svg';
 
       default:
         return 'icons/pikachu.svg';
@@ -83,8 +85,6 @@ class MapComponent {
   }
 
   drawPlacemarkByType(coords, type) {
-    console.log('type',type);
-    console.log('getSvgByParamType',this.getSvgByParamType(type));
     return new ymaps.Placemark(coords,
        {
         hintContent: 'Собственный значок метки',
@@ -130,14 +130,38 @@ class MapComponent {
       this.estimateService.radius);
   }
 
+  getAreaInformation(coords, kind) {
+    return ymaps.geocode(coords,{//это сново хитрюля промис, не забудь
+      skip: 1,
+      kind: kind
+    }).then((res) => {
+      console.log('промис выполнился:', res);
+
+      var iterator = res.geoObjects.getIterator(),
+        object;
+      object = iterator.getNext();
+      return object.properties.get('name');
+
+      /*res.geoObjects.each(function (obj) {
+        console.log('obj!',obj.properties.get('name'));
+        this.district = obj.properties.get('name');
+      });*/
+    });
+  }
+
   addClickListener(map, obj) {
     obj.events.add('click', (e) => {
       try {
         // Получение координат щелчка
         const coords = e.get('coords');
-        console.log('координаты по клику:');
-        console.log(coords);
+        // Получение района
+        this.getAreaInformation(coords, "district").then((district) => {
+          console.log('хитрюля промис вернул:', district);
+          this.estimateService.setDistrict(district);
+        });
+        // очистка карты
         map.geoObjects.removeAll();
+
         this.drawPlacemark(map, coords);
 
         this.estimateService.setCoordinates(coords[0], coords[1]);
