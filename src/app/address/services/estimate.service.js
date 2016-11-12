@@ -21,6 +21,7 @@ class EstimateService {
   };
 
   northPoint;
+  district; //по дефолту у нас Васька
 
   _radius = 500;
   _area;
@@ -38,6 +39,11 @@ class EstimateService {
 
   setNorthPoint(northPoint) {
     this.northPoint = northPoint;
+  }
+
+  setDistrict(district) {
+    console.log('change in service1',district);
+    this.district = district;
   }
 
   getCoordinatesAsArray() {
@@ -150,6 +156,7 @@ class EstimateService {
           this.coordinates.lon
         ]
       },
+      district: this.district,
       radius: this.radius,
       northPoint: this.northPoint.endPoint,
       estimateParams: [
