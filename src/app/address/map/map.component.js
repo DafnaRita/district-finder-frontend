@@ -11,6 +11,8 @@ class MapComponent {
   estimateService;
   circle;
   coordSystem;
+  placemarkCollection;
+  district;
 
   constructor($element, $q, $scope, estimateService) {
     this.$element = $element;
@@ -56,35 +58,34 @@ class MapComponent {
   }
 
   drawPlacemark(map, coords) {
-    map.geoObjects.add(new ymaps.Placemark(coords));
+    var placemark = new ymaps.Placemark(coords);
+    map.geoObjects.add(placemark);
   }
 
   getSvgByParamType(type) {
     switch (type) {
-      case 0:
-        return 'icons/0.svg';
       case 1:
-        return 'icons/1.svg';
+        return 'icons/three.svg';
       case 2:
-        return 'icons/2.svg';
+        return 'icons/price.svg';
       case 3:
-        return 'icons/3.svg';
+        return 'icons/school.svg';
       case 4:
-        return 'icons/4.svg';
+        return 'icons/sport.svg';
       case 5:
-        return 'icons/5.svg';
+        return 'icons/rest.svg';
       case 6:
-        return 'icons/6.svg';
+        return 'icons/health.svg';
+      case 7:
+        return 'icons/kindergartn.svg';
 
       default:
         return 'icons/pikachu.svg';
     }
   }
 
-  drawPlacemarkByType(map, coords, type) {
-    console.log('type',type);
-    console.log('getSvgByParamType',this.getSvgByParamType(type));
-    map.geoObjects.add(new ymaps.Placemark(coords,
+  drawPlacemarkByType(coords, type) {
+    return new ymaps.Placemark(coords,
        {
         hintContent: 'Собственный значок метки',
         balloonContent: 'Это красивая метка'
@@ -98,7 +99,7 @@ class MapComponent {
         iconImageSize: [30, 42],
         // Смещение левого верхнего угла иконки относительно
         // её "ножки" (точки привязки).
-        iconImageOffset: [-3, -42]}));
+        iconImageOffset: [-3, -3]});
   }
 
   $onInit() {
@@ -129,14 +130,38 @@ class MapComponent {
       this.estimateService.radius);
   }
 
+  getAreaInformation(coords, kind) {
+    return ymaps.geocode(coords,{//это сново хитрюля промис, не забудь
+      skip: 1,
+      kind: kind
+    }).then((res) => {
+      console.log('промис выполнился:', res);
+
+      var iterator = res.geoObjects.getIterator(),
+        object;
+      object = iterator.getNext();
+      return object.properties.get('name');
+
+      /*res.geoObjects.each(function (obj) {
+        console.log('obj!',obj.properties.get('name'));
+        this.district = obj.properties.get('name');
+      });*/
+    });
+  }
+
   addClickListener(map, obj) {
     obj.events.add('click', (e) => {
       try {
         // Получение координат щелчка
         const coords = e.get('coords');
-        console.log('координаты по клику:');
-        console.log(coords);
+        // Получение района
+        this.getAreaInformation(coords, "district").then((district) => {
+          console.log('хитрюля промис вернул:', district);
+          this.estimateService.setDistrict(district);
+        });
+        // очистка карты
         map.geoObjects.removeAll();
+
         this.drawPlacemark(map, coords);
 
         this.estimateService.setCoordinates(coords[0], coords[1]);
@@ -155,14 +180,18 @@ class MapComponent {
         return;
       }
       this.circle.geometry.setRadius(raduis);
+      this.estimateService.setNorthPoint(this.getNorthPoint());
     });
 
     this.$scope.$on('estimatedArea', (_, data) => {
+      this.placemarkCollection = new ymaps.GeoObjectCollection();
+      console.log('here',this.placemarkCollection);
       this.map.then((map) => {
         for(const address of data.infrastructure) {
           console.log(address);
-          this.drawPlacemarkByType(map, address.coordinates, address.type);
+          this.placemarkCollection.add(this.drawPlacemarkByType(address.coordinates, address.type));
         }
+        map.geoObjects.add(this.placemarkCollection);
       });
     })
   }
