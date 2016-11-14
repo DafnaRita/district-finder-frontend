@@ -1,4 +1,47 @@
+//.map__map-component
 .map {
   width: 70vw;
   height: 100vh;
+}
+
+.figure {
+  display:block;
+  width:10px;
+  height:10px;
+  border-radius:50%;
+  margin: 0 9px 0px 9px;
+}
+.wrap {
+  display:flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  width: 100%;
+  align-items: center;
+}
+.template {
+  font-size: 18px;
+  font-style: italic;
+}
+.item{
+  margin: 7px 0;
+}
+//.black__map-component
+.red { //1
+  background:red;
+}
+
+.blue { //2
+  background: #1400ff;
+}
+
+.green { //3
+  background: #009103;
+}
+
+.orange { //4
+  background: #ff9700;
+}
+
+.purple { //5
+  background: #8540a3;
 }

@@ -10,9 +10,11 @@ class MapComponent {
   map;
   estimateService;
   circle;
+  coords;
   coordSystem;
   placemarkCollection;
   district;
+  currentHome;
 
   constructor($element, $q, $scope, estimateService) {
     this.$element = $element;
@@ -57,9 +59,65 @@ class MapComponent {
     this.addClickListener(map, this.circle);
   }
 
-  drawPlacemark(map, coords) {
-    var placemark = new ymaps.Placemark(coords);
-    map.geoObjects.add(placemark);
+  drawEmptyPlacemark(map, coords) {
+    this.currentHome = new ymaps.Placemark(coords,  {
+      }, {
+        // Запретим замену обычного балуна на балун-панель.
+        balloonPanelMaxMapArea: 0,
+        draggable: "true",
+        preset: "islands#blueStretchyIcon",
+        // Заставляем балун открываться даже если в нем нет содержимого.
+        openEmptyBalloon: false,
+        hasBalloon: true
+      }
+    );
+    map.geoObjects.add(this.currentHome);
+  }
+
+  drawFillPlacemark(map, coords) {
+    // Создаем шаблон для отображения контента балуна
+    var myBalloonLayout = ymaps.templateLayoutFactory.createClass(
+      `<div class="${this.styles.template}">
+         <h3>Рейтинг дома:</h3>{{properties.ourRating}}</p>
+         <div class="${this.styles.item}">Адрес:{{properties.address}}</div>
+         <div class="${this.styles.item}">Безопасность райна:{{properties.distrRating1}}</div>
+         <div class="${this.styles.item}">Качество жизни:{{properties.distrRating2}}</div>
+         <div class="${this.styles.item}">Качество дорог:{{properties.distrRating3}}</div>
+         <div class="${this.styles.item}">Качество отдыха:{{properties.distrRating4}}</div>
+         <div class="${this.styles.item}">Доступность парков:{{properties.distrRating5}}</div>
+         <div class="${this.styles.item}">
+          <strong>Ближайшие метро</strong>
+         </div>
+          <div class="${this.styles.wrap}">
+            {% for station in properties.stations %} 
+              <div class="${this.styles.wrap} ${this.styles.item}">
+                  [if station.color == 1 ] <figure class="${this.styles.red} ${this.styles.figure}"></figure> \ [endif] 
+                  [if station.color == 2 ] <figure class="${this.styles.blue} ${this.styles.figure}"></figure> \ [endif] 
+                  [if station.color == 3 ] <figure class="${this.styles.green} ${this.styles.figure}" ></figure> \ [endif] 
+                  [if station.color == 4 ] <figure class="${this.styles.orange} ${this.styles.figure}" ></figure> \ [endif]  
+                  [if station.color == 5 ] <figure class="${this.styles.purple} ${this.styles.figure}" ></figure> \ [endif] 
+               {{station.name}}:{{station.distance}} \
+              </div>
+            {% endfor %} 
+          </div>
+       </div>
+      `
+    );
+
+    this.currentHome = new ymaps.Placemark(coords,  {
+        hintContent: "Кликните, чтобы узнать дополнительную информацию"
+      }, {
+        // Запретим замену обычного балуна на балун-панель.
+        balloonPanelMaxMapArea: 0,
+        draggable: "true",
+        preset: "islands#blueStretchyIcon",
+        // Заставляем балун открываться даже если в нем нет содержимого.
+        openEmptyBalloon: false,
+        balloonContentLayout: myBalloonLayout,
+        balloonMinWidth: 250
+      }
+    );
+    map.geoObjects.add(this.currentHome);
   }
 
   getSvgByParamType(type) {
@@ -153,20 +211,19 @@ class MapComponent {
     obj.events.add('click', (e) => {
       try {
         // Получение координат щелчка
-        const coords = e.get('coords');
+        this.coords = e.get('coords');
         // Получение района
-        this.getAreaInformation(coords, "district").then((district) => {
-          console.log('хитрюля промис вернул:', district);
+        this.getAreaInformation(this.coords, "district").then((district) => {
           this.estimateService.setDistrict(district);
         });
         // очистка карты
         map.geoObjects.removeAll();
 
-        this.drawPlacemark(map, coords);
+        this.drawEmptyPlacemark(map, this.coords);
 
-        this.estimateService.setCoordinates(coords[0], coords[1]);
+        this.estimateService.setCoordinates(this.coords[0], this.coords[1]);
         this.estimateService.setNorthPoint(this.getNorthPoint());
-        this.drawCircle(map, coords, this.estimateService.radius);
+        this.drawCircle(map, this.coords, this.estimateService.radius);
       }
       catch (error) {
         // странная яндекс-ошибка, никак на нас не влияющая
@@ -185,17 +242,42 @@ class MapComponent {
 
     this.$scope.$on('estimatedArea', (_, data) => {
       this.placemarkCollection = new ymaps.GeoObjectCollection();
-      console.log('here',this.placemarkCollection);
       this.map.then((map) => {
         for(const address of data.infrastructure) {
-          console.log(address);
           this.placemarkCollection.add(this.drawPlacemarkByType(address.coordinates, address.type));
         }
         map.geoObjects.add(this.placemarkCollection);
+        // удаление прошлой отметки
+        map.geoObjects.remove(this.currentHome);
+
+        this.drawFillPlacemark(map, this.coords);
+        this.currentHome.properties.set({'ourRating':data.estimate,
+          address:data.address,
+          distrRating1:data.districtRating.safety,
+          distrRating2:data.districtRating.life_quality,
+          distrRating3:data.districtRating.transport_quality,
+          distrRating4:data.districtRating.rest_availability,
+          distrRating5:data.districtRating.parks_availability,
+          stations: data.metro
+        });
       });
     })
   }
 }
+
+/*
+ourRating
+address
+distrRating1
+distrRating2
+distrRating3
+distrRating4
+distrRating5
+stationName1
+stationDistance1
+stationName2
+stationDistance2
+ */
 
 MapComponent.$inject = ['$element', '$q', '$scope', EstimateService.name];
 

@@ -1,9 +1,9 @@
 export default Object.freeze({
-  parks: 0,
-  malls: 1,
-  schools: 2,
-  sportCenters: 3,
-  rest: 4,
-  hospitals: 5,
-  kindergarten: 6
+  parks: 1,
+  malls: 2,
+  schools: 3,
+  sportCenters: 4,
+  rest: 5,
+  hospitals: 6,
+  kindergarten: 7
 });
