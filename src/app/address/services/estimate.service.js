@@ -62,14 +62,33 @@ class EstimateService {
   getEstimatedArea() {
     /*для поддельного джейсона*/
     /*this.$q.resolve({
-      "estimate": "lol",
-      "target": {
-        "address": "5-я линия Васильевского острова, 30В",
-        "coordinates": [
-          30.282262,
-          59.941506
-        ]
+      "estimate": 4.5,
+      "address": "5-я линия Васильевского острова, 30В",
+      "districtRating":
+      {
+        "safety": 1,
+        "life_quality": 2,
+        "transport_quality": 3,
+        "rest_availability": 4,
+        "parks_availability": 5
       },
+      "metro":[
+        {
+          "name": "Невский проспект",
+          "distance": "1.5 км",
+          "color": 2
+        },
+        {
+          "name": "Маяковская",
+          "distance": "0.5 км",
+          "color": 3
+        },
+        {
+          "name": "Чернышевская",
+          "distance": "6.5 км",
+          "color": 1
+        }
+      ],
       "infrastructure": [
         {
           "address": "Санкт-Петербург, В.О., линия 2-я, 43",
