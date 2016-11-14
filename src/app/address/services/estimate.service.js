@@ -62,7 +62,7 @@ class EstimateService {
   getEstimatedArea() {
     /*для поддельного джейсона*/
     /*this.$q.resolve({
-      "estimate": "4.5",
+      "estimate": "lol",
       "target": {
         "address": "5-я линия Васильевского острова, 30В",
         "coordinates": [
@@ -139,7 +139,7 @@ class EstimateService {
       .then((data) => {
         this.$rootScope.$broadcast('estimatedArea', data);
       });
-      */
+*/
     /* для обычной отправки/принятия джейсона*/
     this.$http.post('/get_query', this.getRestData())
      .then((response) => {
