@@ -80,11 +80,11 @@ class MapComponent {
       `<div class="${this.styles.template}">
          <h3>Рейтинг дома:</h3>{{properties.ourRating}}</p>
          <div class="${this.styles.item}">Адрес:{{properties.address}}</div>
-         <div class="${this.styles.item}">Рейтинг1:{{properties.distrRating1}}</div>
-         <div class="${this.styles.item}">Рейтинг2:{{properties.distrRating2}}</div>
-         <div class="${this.styles.item}">Рейтинг3:{{properties.distrRating3}}</div>
-         <div class="${this.styles.item}">Рейтинг4:{{properties.distrRating4}}</div>
-         <div class="${this.styles.item}">Рейтинг5:{{properties.distrRating5}}</div>
+         <div class="${this.styles.item}">Безопасность райна:{{properties.distrRating1}}</div>
+         <div class="${this.styles.item}">Качество жизни:{{properties.distrRating2}}</div>
+         <div class="${this.styles.item}">Качество дорог:{{properties.distrRating3}}</div>
+         <div class="${this.styles.item}">Качество отдыха:{{properties.distrRating4}}</div>
+         <div class="${this.styles.item}">Доступность парков:{{properties.distrRating5}}</div>
          <div class="${this.styles.item}">
           <strong>Ближайшие метро</strong>
          </div>
@@ -251,31 +251,14 @@ class MapComponent {
         map.geoObjects.remove(this.currentHome);
 
         this.drawFillPlacemark(map, this.coords);
-        /*this.currentHome.properties.set({'ourRating':data.estimate,'address':"0",
-          'distrRating1':"2", 'distrRating2':"2", 'distrRating3':"3",
-          'distrRating4':"4", 'distrRating5':"5", 'distrRating6':"6", 'stationName1':"Василеостровская",
-          'stationDistance1':"8", 'stationName2':"Петроградская",'stationDistance2':"10",'color':2});
-      });*/
         this.currentHome.properties.set({'ourRating':data.estimate,
-          address:"0",
-          distrRating1:"2",
-          distrRating2:"2",
-          distrRating3:"3",
-          distrRating4:"4",
-          distrRating5:"5",
-          distrRating6:"6",
-          stations: [
-            {
-              name:"Василеостровская",
-              distance: "8",
-              color:3
-            },
-            {
-              name:"Петроградская",
-              distance: "100500",
-              color:2
-            },
-          ]
+          address:data.address,
+          distrRating1:data.districtRating.safety,
+          distrRating2:data.districtRating.life_quality,
+          distrRating3:data.districtRating.transport_quality,
+          distrRating4:data.districtRating.rest_availability,
+          distrRating5:data.districtRating.parks_availability,
+          stations: data.metro
         });
       });
     })
