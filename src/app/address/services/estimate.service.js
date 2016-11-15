@@ -86,7 +86,7 @@ class EstimateService {
         {
           "name": "Чернышевская",
           "distance": "6.5 км",
-          "color": 1
+          "color": 4
         }
       ],
       "infrastructure": [
@@ -157,8 +157,8 @@ class EstimateService {
     })
       .then((data) => {
         this.$rootScope.$broadcast('estimatedArea', data);
-      });
-*/
+      });*/
+
     /* для обычной отправки/принятия джейсона*/
     this.$http.post('/get_query', this.getRestData())
      .then((response) => {
@@ -169,12 +169,10 @@ class EstimateService {
 
   getRestData() {
     return {
-      target: {
-        coordinates: [
-          this.coordinates.lat,
-          this.coordinates.lon
-        ]
-      },
+      coordinatesCurrent: [
+        this.coordinates.lat,
+        this.coordinates.lon
+      ],
       district: this.district,
       radius: this.radius,
       northPoint: this.northPoint.endPoint,
