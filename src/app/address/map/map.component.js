@@ -1,5 +1,4 @@
 import {EstimateService} from '../services';
-import {ParamEnum} from '../utils';
 
 class MapComponent {
   styles = require('./map.component.scss');
@@ -9,6 +8,7 @@ class MapComponent {
   $scope;
   map;
   estimateService;
+  placemarks = new Map();
   circle;
   coords;
   coordSystem;
@@ -80,7 +80,7 @@ class MapComponent {
       `<div class="${this.styles.template}">
          <h3>Рейтинг дома:</h3>{{properties.ourRating}}</p>
          <div class="${this.styles.item}">Адрес:{{properties.address}}</div>
-         <div class="${this.styles.item}">Безопасность райна:{{properties.distrRating1}}</div>
+         <div class="${this.styles.item}">Безопасность района:{{properties.distrRating1}}</div>
          <div class="${this.styles.item}">Качество жизни:{{properties.distrRating2}}</div>
          <div class="${this.styles.item}">Качество дорог:{{properties.distrRating3}}</div>
          <div class="${this.styles.item}">Качество отдыха:{{properties.distrRating4}}</div>
@@ -145,8 +145,8 @@ class MapComponent {
   drawPlacemarkByType(coords, type) {
     return new ymaps.Placemark(coords,
        {
-        hintContent: 'Собственный значок метки',
-        balloonContent: 'Это красивая метка'
+        hintContent: 'Кликните, чтобы получить больше информацию',
+        balloonContent: 'Тролололо'
       }, {
         // Опции.
         // Необходимо указать данный тип макета.
@@ -157,12 +157,18 @@ class MapComponent {
         iconImageSize: [30, 42],
         // Смещение левого верхнего угла иконки относительно
         // её "ножки" (точки привязки).
-        iconImageOffset: [-3, -3]});
+        iconImageOffset: [0, 0],
+        balloonPanelMaxMapArea: 0,
+        draggable: "true",
+        preset: "islands#blueStretchyIcon",
+        // Заставляем балун открываться даже если в нем нет содержимого.
+        openEmptyBalloon: false,
+        hasBalloon: true});
   }
 
   $onInit() {
     const map = this.$element.find('.map')[0];
-    this.map = this.$q((resolve) => {//it's a trap. Это не map, это хитрюля promise
+    this.map = this.$q((resolve) => {//it's a trap. Это не list, это хитрюля promise
       ymaps.ready(() => {
         resolve();
       });
@@ -231,6 +237,16 @@ class MapComponent {
     });
   }
 
+  addPlacemarkListener(placemark) {
+    placemark.events.add('click',(e) => {
+      console.log("address lat:",this.placemarks.get(e.get('target')).address[0]);
+      console.log("address lon:",this.placemarks.get(e.get('target')).address[1]);
+      console.log("type:",this.placemarks.get(e.get('target')).type);
+      this.estimateService.getMoreInfo(this.placemarks.get(e.get('target')));
+      }
+    );
+  }
+
   _listen() { //ловим все эвенты с рутового эвента в данном скоупе.
     this.$scope.$on('changeRadius', (_, raduis) => {
       if (!this.circle) {
@@ -242,9 +258,17 @@ class MapComponent {
 
     this.$scope.$on('estimatedArea', (_, data) => {
       this.placemarkCollection = new ymaps.GeoObjectCollection();
+
       this.map.then((map) => {
         for(const address of data.infrastructure) {
-          this.placemarkCollection.add(this.drawPlacemarkByType(address.coordinates, address.type));
+          let placemark = this.drawPlacemarkByType(address.coordinates, address.type);
+          this.addPlacemarkListener(placemark);
+          this.placemarkCollection.add(placemark);
+          this.placemarks.set(placemark,
+            {
+              address: address.coordinates,
+              type: address.type
+            });
         }
         map.geoObjects.add(this.placemarkCollection);
         // удаление прошлой отметки
@@ -264,20 +288,6 @@ class MapComponent {
     })
   }
 }
-
-/*
-ourRating
-address
-distrRating1
-distrRating2
-distrRating3
-distrRating4
-distrRating5
-stationName1
-stationDistance1
-stationName2
-stationDistance2
- */
 
 MapComponent.$inject = ['$element', '$q', '$scope', EstimateService.name];
 
