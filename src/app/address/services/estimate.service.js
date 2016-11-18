@@ -24,7 +24,6 @@ class EstimateService {
   district; //по дефолту у нас Васька
 
   _radius = 500;
-  _area;
 
   constructor($http, $rootScope, $q) {
     this.$http = $http;
@@ -61,7 +60,7 @@ class EstimateService {
 
   getEstimatedArea() {
     /*для поддельного джейсона*/
-    /*this.$q.resolve({
+    this.$q.resolve({
       "estimate": 4.5,
       "address": "5-я линия Васильевского острова, 30В",
       "districtRating":
@@ -157,14 +156,23 @@ class EstimateService {
     })
       .then((data) => {
         this.$rootScope.$broadcast('estimatedArea', data);
-      });*/
+      });
 
     /* для обычной отправки/принятия джейсона*/
-    this.$http.post('/get_query', this.getRestData())
+    /*this.$http.post('/get_query', this.getRestData())
      .then((response) => {
        const data = response.data;
        this.$rootScope.$broadcast('estimatedArea', data);
-     });
+     });*/
+  }
+
+  getMoreInfo(query) {
+    this.$http.get('/get_info',{
+      params:  { lat: query.address[0],
+        lon: query.address[1],
+        type: query.type }
+    });
+    console.log('отправлено');
   }
 
   getRestData() {
