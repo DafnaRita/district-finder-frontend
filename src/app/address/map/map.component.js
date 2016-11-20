@@ -8,13 +8,14 @@ class MapComponent {
   $scope;
   map;
   estimateService;
-  placemarks = new Map();
+  keyPlacemarksCollection = new Map();
   circle;
   coords;
   coordSystem;
-  placemarkCollection;
+  mapPlacemarkCollection;
   district;
   currentHome;
+  currentPlacemark;
 
   constructor($element, $q, $scope, estimateService) {
     this.$element = $element;
@@ -74,10 +75,10 @@ class MapComponent {
     map.geoObjects.add(this.currentHome);
   }
 
-  drawFillPlacemark(map, coords) {
-    // Создаем шаблон для отображения контента балуна
-    var myBalloonLayout = ymaps.templateLayoutFactory.createClass(
-      `<div class="${this.styles.template}">
+  drawFillPlacemarkCurrentHome(map, coords) {
+      // Создаем шаблон для отображения контента балуна
+      var myBalloonLayout = ymaps.templateLayoutFactory.createClass(
+        `<div class="${this.styles.template}">
          <h3>Рейтинг дома:</h3>{{properties.ourRating}}</p>
          <div class="${this.styles.item}">Адрес:{{properties.address}}</div>
          <div class="${this.styles.item}">Безопасность района:{{properties.distrRating1}}</div>
@@ -102,7 +103,7 @@ class MapComponent {
           </div>
        </div>
       `
-    );
+      );
 
     this.currentHome = new ymaps.Placemark(coords,  {
         hintContent: "Кликните, чтобы узнать дополнительную информацию"
@@ -118,6 +119,39 @@ class MapComponent {
       }
     );
     map.geoObjects.add(this.currentHome);
+  }
+  /*
+   name:data.name,
+   address:data.address,
+   url:data.url,
+   phoneNumber:data.phoneNumber
+   */
+  drawFillBalloon(currentPlacemark) {
+    // Создаем шаблон для отображения контента балуна
+    var myBalloonLayout = ymaps.templateLayoutFactory.createClass(
+      `<div class="${this.styles.template}">
+         <h3>Название:</h3>{{currentPlacemark.properties.name}}</p>
+         <div class="${this.styles.item}">Адрес:{{currentPlacemark.properties.address}}</div>
+         <div class="${this.styles.item}">url:{{currentPlacemark.properties.url}}</div>
+         <div class="${this.styles.item}">Номер телефона:{{currentPlacemark.properties.phoneNumber}}</div>
+       </div>
+      `
+    );
+
+    var current = new ymaps.Placemark(currentPlacemark.coords,  {
+        hintContent: "Кликните, чтобы узнать дополнительную информацию"
+      }, {
+        // Запретим замену обычного балуна на балун-панель.
+        balloonPanelMaxMapArea: 0,
+        draggable: "true",
+        preset: "islands#blueStretchyIcon",
+        // Заставляем балун открываться даже если в нем нет содержимого.
+        openEmptyBalloon: false,
+        balloonContentLayout: myBalloonLayout,
+        balloonMinWidth: 250
+      }
+    );
+    map.geoObjects.add(current);
   }
 
   getSvgByParamType(type) {
@@ -143,6 +177,15 @@ class MapComponent {
   }
 
   drawPlacemarkByType(coords, type) {
+    var myBalloonLayout = ymaps.templateLayoutFactory.createClass(
+      `<div class="${this.styles.template}">
+         <h3>Название:</h3>{{properties.name}}</p>
+         <div class="${this.styles.item}">Адрес:{{properties.address}}</div>
+         <div class="${this.styles.item}">url:{{properties.url}}</div>
+         <div class="${this.styles.item}">Номер телефона:{{properties.phoneNumber}}</div>
+       </div>
+      `
+    );
     return new ymaps.Placemark(coords,
        {
         hintContent: 'Кликните, чтобы получить больше информацию',
@@ -163,6 +206,7 @@ class MapComponent {
         preset: "islands#blueStretchyIcon",
         // Заставляем балун открываться даже если в нем нет содержимого.
         openEmptyBalloon: false,
+        balloonContentLayout: myBalloonLayout,
         hasBalloon: true});
   }
 
@@ -239,10 +283,11 @@ class MapComponent {
 
   addPlacemarkListener(placemark) {
     placemark.events.add('click',(e) => {
-      console.log("address lat:",this.placemarks.get(e.get('target')).address[0]);
-      console.log("address lon:",this.placemarks.get(e.get('target')).address[1]);
-      console.log("type:",this.placemarks.get(e.get('target')).type);
-      this.estimateService.getMoreInfo(this.placemarks.get(e.get('target')));
+      console.log("address lat:",this.keyPlacemarksCollection.get(e.get('target')).address[0]);
+      console.log("address lon:",this.keyPlacemarksCollection.get(e.get('target')).address[1]);
+      console.log("type:",this.keyPlacemarksCollection.get(e.get('target')).type);
+      console.log("id:",this.keyPlacemarksCollection.get(e.get('target')).id);
+      this.estimateService.getMoreInfo(this.keyPlacemarksCollection.get(e.get('target')));
       }
     );
   }
@@ -257,24 +302,25 @@ class MapComponent {
     });
 
     this.$scope.$on('estimatedArea', (_, data) => {
-      this.placemarkCollection = new ymaps.GeoObjectCollection();
+      this.mapPlacemarkCollection = new ymaps.GeoObjectCollection();
 
       this.map.then((map) => {
         for(const address of data.infrastructure) {
           let placemark = this.drawPlacemarkByType(address.coordinates, address.type);
           this.addPlacemarkListener(placemark);
-          this.placemarkCollection.add(placemark);
-          this.placemarks.set(placemark,
+          this.mapPlacemarkCollection.add(placemark);
+          this.keyPlacemarksCollection.set(placemark,
             {
               address: address.coordinates,
-              type: address.type
+              type: address.type,
+              idPlace: this.mapPlacemarkCollection.indexOf(placemark)
             });
         }
-        map.geoObjects.add(this.placemarkCollection);
+        map.geoObjects.add(this.mapPlacemarkCollection);
         // удаление прошлой отметки
         map.geoObjects.remove(this.currentHome);
 
-        this.drawFillPlacemark(map, this.coords);
+        this.drawFillPlacemarkCurrentHome(map, this.coords);
         this.currentHome.properties.set({'ourRating':data.estimate,
           address:data.address,
           distrRating1:data.districtRating.safety,
@@ -285,7 +331,23 @@ class MapComponent {
           stations: data.metro
         });
       });
-    })
+    });
+
+    this.$scope.$on('eventGetMoreInfo', (_, data, idPlace) => {
+      var currentPlacemark = this.mapPlacemarkCollection.get(idPlace);
+      console.log(currentPlacemark);
+      console.log(idPlace);
+      //map.geoObjects.remove(currentPlacemark);
+      currentPlacemark.properties.set({
+        name:data.name,
+        address:data.address,
+        url:data.url,
+        phoneNumber:data.phoneNumber
+      });
+
+      // this.drawFillBalloon(currentPlacemark);
+
+    });
   }
 }
 

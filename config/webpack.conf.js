@@ -26,7 +26,7 @@ module.exports = {
     loaders: [
       { // jquery loader
         test: require.resolve("jquery"),
-        loader: "expose?$!expose?jQuery",
+        loader: "expose-loader?$!expose-loader?jQuery",
         include: /node_modules/
       },
       { // Babel loader
