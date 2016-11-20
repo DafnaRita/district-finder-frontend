@@ -120,39 +120,6 @@ class MapComponent {
     );
     map.geoObjects.add(this.currentHome);
   }
-  /*
-   name:data.name,
-   address:data.address,
-   url:data.url,
-   phoneNumber:data.phoneNumber
-   */
-  drawFillBalloon(currentPlacemark) {
-    // Создаем шаблон для отображения контента балуна
-    var myBalloonLayout = ymaps.templateLayoutFactory.createClass(
-      `<div class="${this.styles.template}">
-         <h3>Название:</h3>{{currentPlacemark.properties.name}}</p>
-         <div class="${this.styles.item}">Адрес:{{currentPlacemark.properties.address}}</div>
-         <div class="${this.styles.item}">url:{{currentPlacemark.properties.url}}</div>
-         <div class="${this.styles.item}">Номер телефона:{{currentPlacemark.properties.phoneNumber}}</div>
-       </div>
-      `
-    );
-
-    var current = new ymaps.Placemark(currentPlacemark.coords,  {
-        hintContent: "Кликните, чтобы узнать дополнительную информацию"
-      }, {
-        // Запретим замену обычного балуна на балун-панель.
-        balloonPanelMaxMapArea: 0,
-        draggable: "true",
-        preset: "islands#blueStretchyIcon",
-        // Заставляем балун открываться даже если в нем нет содержимого.
-        openEmptyBalloon: false,
-        balloonContentLayout: myBalloonLayout,
-        balloonMinWidth: 250
-      }
-    );
-    map.geoObjects.add(current);
-  }
 
   getSvgByParamType(type) {
     switch (type) {
@@ -208,6 +175,29 @@ class MapComponent {
         openEmptyBalloon: false,
         balloonContentLayout: myBalloonLayout,
         hasBalloon: true});
+  }
+
+  drawPlacemarkByType2(coords, type, maps) {
+    maps.geoObjects.add(ymaps.Placemark(coords,
+      {
+        balloonContent: ''
+      }, {
+        // Опции.
+        // Необходимо указать данный тип макета.
+        iconLayout: 'default#image',
+        // Своё изображение иконки метки.
+        iconImageHref: this.getSvgByParamType(type),
+        // Размеры метки.
+        iconImageSize: [30, 42],
+        // Смещение левого верхнего угла иконки относительно
+        // её "ножки" (точки привязки).
+        iconImageOffset: [0, 0],
+        balloonPanelMaxMapArea: 0,
+        draggable: "true",
+        preset: "islands#blueStretchyIcon",
+        // Заставляем балун открываться даже если в нем нет содержимого.
+        openEmptyBalloon: false,
+        hasBalloon: true}));
   }
 
   $onInit() {
@@ -307,6 +297,7 @@ class MapComponent {
       this.map.then((map) => {
         for(const address of data.infrastructure) {
           let placemark = this.drawPlacemarkByType(address.coordinates, address.type);
+          this.drawPlacemarkByType2(address.coordinates, address.type, map);
           this.addPlacemarkListener(placemark);
           this.mapPlacemarkCollection.add(placemark);
           this.keyPlacemarksCollection.set(placemark,
