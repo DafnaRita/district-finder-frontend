@@ -178,7 +178,7 @@ class MapComponent {
   }
 
   drawPlacemarkByType2(coords, type, maps) {
-    maps.geoObjects.add(ymaps.Placemark(coords,
+    maps.geoObjects.add(new ymaps.Placemark(coords,
       {
         balloonContent: ''
       }, {
