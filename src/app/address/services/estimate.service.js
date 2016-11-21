@@ -60,6 +60,7 @@ class EstimateService {
 
   getEstimatedArea() {
     /*для поддельного джейсона*/
+    /*
     this.$q.resolve({
       "estimate": 4.5,
       "address": "5-я линия Васильевского острова, 30В",
@@ -157,22 +158,40 @@ class EstimateService {
       .then((data) => {
         this.$rootScope.$broadcast('estimatedArea', data);
       });
-
+*/
     /* для обычной отправки/принятия джейсона*/
-    /*this.$http.post('/get_query', this.getRestData())
+    this.$http.post('/get_query', this.getRestData())
      .then((response) => {
        const data = response.data;
        this.$rootScope.$broadcast('estimatedArea', data);
-     });*/
+     });
   }
 
   getMoreInfo(query) {
+
     this.$http.get('/get_info',{
       params:  { lat: query.address[0],
         lon: query.address[1],
         type: query.type }
-    });
+    })
+      .then((moreData)=>{
+        const data = moreData.data;
+        this.$rootScope.$broadcast('eventGetMoreInfo', data, query.idPlace);
+      });
     console.log('отправлено');
+    // this.$q.resolve({
+    //   "name":"Детский сад № 5",
+    //   "address":"Санкт-Петербург, ул. Гаванская, 56, литера Х",
+    //   "url":"http://vasdou005.ucoz.ru",
+    //   "phoneNumber":"+7 (812) 352-55-82 ; ",
+    //   "workTime":"пн-пт 7:00–19:00",
+    //   "additionalInfo":""
+    // })
+    //   .then((data) => {
+    //     //data.add(idPlace,query.idPlace);
+    //     this.$rootScope.$broadcast('eventGetMoreInfo', data,query.idPlace);
+    //   });
+    // console.log('отправлено');
   }
 
   getRestData() {
