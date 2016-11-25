@@ -3,7 +3,7 @@ import {LayoutComponent} from './layout';
 import LayoutModule from './layout.module';
 
 function LayoutRoute($stateProvider, $urlRouterProvider) {
-  $urlRouterProvider.otherwise('/address');
+  $urlRouterProvider.otherwise('/login');
 
   $stateProvider
     .state('layout', {
