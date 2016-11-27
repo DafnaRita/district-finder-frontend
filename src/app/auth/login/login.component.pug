@@ -1,0 +1,14 @@
+div(class="{{::$ctrl.styles.login}}")
+  form(name="auth")
+    md-input-container
+      label Логин
+      input(ng-model="$ctrl.login" name="login" required="")
+      div(ng-messages="auth.login.$error" multiple="" role="alert" md-auto-hide="false")
+        div(ng-message="required") Это поле обязательно
+        div(ng-if="$ctrl.authErrors.wrong_login") Не валидный логин
+    md-input-container
+      label Пароль
+      input(ng-model="$ctrl.pass" type="password")
+      div(ng-if="$ctrl.authErrors.wrongPass") Не валидный пароль
+    a(ui-sref="layout.registration") Не зарегистрированы?
+    md-button.md-raised.md-primary(ng-click='$ctrl.signin()') Войти
