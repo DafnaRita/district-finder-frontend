@@ -15,15 +15,15 @@ class AuthService {
   }
 
   checkUser(login, pass) {
-    console.log("login", login);
-    console.log("pass", pass);
-    this.$http.post('/auth',{
-      user:  {
-        login: login,
-        pass: pass }
+    const headers = {
+      authorization : "Basic "
+      + btoa(login + ":" + pass)
+    };
+    this.$http.get('/auth',{
+      headers : headers
     })
       .then((moreData)=>{
-        return moreData.data;
+        return moreData;
       });
     /*return this.$q.resolve({
       isAuth: false,

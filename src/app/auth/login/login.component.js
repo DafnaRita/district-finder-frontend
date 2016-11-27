@@ -19,9 +19,10 @@ class LoginComponent {
   signin() {
     this.authService.checkUser(this.login, this.pass)
       .then((data) => {
-        if(data.isAuth) {
+        if(data.data.isAuth) {
           this.$state.go('layout.address');
-        } else {
+        }
+        if(data.data.status == 403) {
           this.authErrors[data.error] = true; // ставим ошибке true
         }
       })
