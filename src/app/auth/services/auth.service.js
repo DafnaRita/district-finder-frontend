@@ -14,13 +14,17 @@ class AuthService {
     this.$q = $q;
   }
 
-  checkUser(login, pass) {
-    const headers = {
+  createHeader() {
+    console.log("createHeader");
+    return {
       authorization : "Basic "
-      + btoa(login + ":" + pass)
+      + btoa(this.user.login + ":" + this.user.pass)
     };
-    this.$http.get('/auth',{
-      headers : headers
+  }
+  checkUser(login, pass) {
+    return this.$http.post('/auth',{
+      login : login,
+      pass: pass
     })
       .then((moreData)=>{
         return moreData;
