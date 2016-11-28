@@ -4,6 +4,7 @@ import {AddressComponent} from './address';
 import {FilterComponent} from './filter';
 import {MapComponent} from './map';
 import {EstimateService} from './services';
+import {AuthService} from '../auth';
 
 export default angular.module('AddressModule', [
   NgMaterialModule

@@ -1,9 +1,11 @@
 import {ParamEnum} from '../utils';
+import {AuthService} from '../../auth';
 
 class EstimateService {
   $http;
   $rootScope;
   $q;
+  authService;
 
   params = {
     parks: 0,
@@ -25,10 +27,11 @@ class EstimateService {
 
   _radius = 500;
 
-  constructor($http, $rootScope, $q) {
+  constructor($http, $rootScope, $q, AuthService) {
     this.$http = $http;
     this.$rootScope = $rootScope;
     this.$q = $q;
+    this.authService = AuthService;
   }
 
   setCoordinates(lat, lon) {
@@ -41,7 +44,7 @@ class EstimateService {
   }
 
   setDistrict(district) {
-    console.log('change in service1',district);
+    console.log('change in service1', district);
     this.district = district;
   }
 
@@ -61,120 +64,132 @@ class EstimateService {
   getEstimatedArea() {
     /*для поддельного джейсона*/
     /*
-    this.$q.resolve({
-      "estimate": 4.5,
-      "address": "5-я линия Васильевского острова, 30В",
-      "districtRating":
-      {
-        "safety": 1,
-        "life_quality": 2,
-        "transport_quality": 3,
-        "rest_availability": 4,
-        "parks_availability": 5
-      },
-      "metro":[
-        {
-          "name": "Невский проспект",
-          "distance": "1.5 км",
-          "color": 2
-        },
-        {
-          "name": "Маяковская",
-          "distance": "0.5 км",
-          "color": 3
-        },
-        {
-          "name": "Чернышевская",
-          "distance": "6.5 км",
-          "color": 4
-        }
-      ],
-      "infrastructure": [
-        {
-          "address": "Санкт-Петербург, В.О., линия 2-я, 43",
-          "name": "Британская школа Ila Aspect",
-          "type": 3,
-          "coordinates": [
-            59.94581,
-            30.282747
-          ]
-        },
-        {
-          "address": "Санкт-Петербург, 5-я линия В. О., 16/17, литер А",
-          "name": "Школа № 21 им. Э.П. Шаффе",
-          "type": 3,
-          "coordinates": [
-            59.940568,
-            30.284661
-          ]
-        },
-        {
-          "address": "Санкт-Петербург, В.О., Средний просп., 28/29, литера А, пом. 32Н",
-          "name": "Частная школа Ювента",
-          "type": 3,
-          "coordinates": [
-            59.943129,
-            30.279325
-          ]
-        },
-        {
-          "address": "Санкт-Петербург, Волжский пер., 11",
-          "name": "Православная общеобразовательная школа Семьи Шостаковичей",
-          "type": 3,
-          "coordinates": [
-            59.940807,
-            30.283232
-          ]
-        },
-        {
-          "address": "Санкт-Петербург, 6-я линия В. О., 15Литера Д",
-          "name": "Частная школа Шостаковичей",
-          "type": 3,
-          "coordinates": [
-            59.940731,
-            30.281831
-          ]
-        },
-        {
-          "address": "Санкт-Петербург, 2-я линия В. О., 43",
-          "name": "Британский школа Аспект",
-          "type": 3,
-          "coordinates": [
-            59.94581,
-            30.282747
-          ]
-        },
-        {
-          "address": "Санкт-Петербург, 2-я линия В. О., 43",
-          "name": "НОУ Международная языковая академия Аспект Британская школа Аспект",
-          "type": 3,
-          "coordinates": [
-            59.94581,
-            30.282747
-          ]
-        }
-      ]
+     this.$q.resolve({
+     "estimate": 4.5,
+     "address": "5-я линия Васильевского острова, 30В",
+     "districtRating":
+     {
+     "safety": 1,
+     "life_quality": 2,
+     "transport_quality": 3,
+     "rest_availability": 4,
+     "parks_availability": 5
+     },
+     "metro":[
+     {
+     "name": "Невский проспект",
+     "distance": "1.5 км",
+     "color": 2
+     },
+     {
+     "name": "Маяковская",
+     "distance": "0.5 км",
+     "color": 3
+     },
+     {
+     "name": "Чернышевская",
+     "distance": "6.5 км",
+     "color": 4
+     }
+     ],
+     "infrastructure": [
+     {
+     "address": "Санкт-Петербург, В.О., линия 2-я, 43",
+     "name": "Британская школа Ila Aspect",
+     "type": 3,
+     "coordinates": [
+     59.94581,
+     30.282747
+     ]
+     },
+     {
+     "address": "Санкт-Петербург, 5-я линия В. О., 16/17, литер А",
+     "name": "Школа № 21 им. Э.П. Шаффе",
+     "type": 3,
+     "coordinates": [
+     59.940568,
+     30.284661
+     ]
+     },
+     {
+     "address": "Санкт-Петербург, В.О., Средний просп., 28/29, литера А, пом. 32Н",
+     "name": "Частная школа Ювента",
+     "type": 3,
+     "coordinates": [
+     59.943129,
+     30.279325
+     ]
+     },
+     {
+     "address": "Санкт-Петербург, Волжский пер., 11",
+     "name": "Православная общеобразовательная школа Семьи Шостаковичей",
+     "type": 3,
+     "coordinates": [
+     59.940807,
+     30.283232
+     ]
+     },
+     {
+     "address": "Санкт-Петербург, 6-я линия В. О., 15Литера Д",
+     "name": "Частная школа Шостаковичей",
+     "type": 3,
+     "coordinates": [
+     59.940731,
+     30.281831
+     ]
+     },
+     {
+     "address": "Санкт-Петербург, 2-я линия В. О., 43",
+     "name": "Британский школа Аспект",
+     "type": 3,
+     "coordinates": [
+     59.94581,
+     30.282747
+     ]
+     },
+     {
+     "address": "Санкт-Петербург, 2-я линия В. О., 43",
+     "name": "НОУ Международная языковая академия Аспект Британская школа Аспект",
+     "type": 3,
+     "coordinates": [
+     59.94581,
+     30.282747
+     ]
+     }
+     ]
+     })
+     .then((data) => {
+     this.$rootScope.$broadcast('estimatedArea', data);
+     });
+     */
+    /* для обычной отправки/принятия джейсона*/
+    console.log("pass and login",
+      this.authService.user);
+    this.$http.post('/api/get_query', this.getRestData(), {
+      headers: this.authService.createHeader(
+        this.authService.user.login,
+        this.authService.user.pass),
     })
-      .then((data) => {
+      .then((response) => {
+        const data = response.data;
         this.$rootScope.$broadcast('estimatedArea', data);
       });
-*/
-    /* для обычной отправки/принятия джейсона*/
-    this.$http.post('/get_query', this.getRestData())
-     .then((response) => {
-       const data = response.data;
-       this.$rootScope.$broadcast('estimatedArea', data);
-     });
   }
 
   getMoreInfo(query) {
-
-    this.$http.get('/get_info',{
-      params:  { lat: query.address[0],
+    console.log("pass and login",
+      this.authService.user);
+    this.$http.get('/api/get_info', {
+      header: this.authService.createHeader(
+        this.authService.user.login,
+        this.authService.user.pass),
+      params: {
+        lat: query.address[0],
         lon: query.address[1],
-        type: query.type }
+        type: query.type
+      }
     })
-      .then((moreData)=>{
+      .then((moreData)=> {
         const data = moreData.data;
         this.$rootScope.$broadcast('eventGetMoreInfo', data, query.idPlace);
       });
@@ -237,7 +252,7 @@ class EstimateService {
   }
 }
 
-EstimateService.$inject = ['$http', '$rootScope', '$q'];
+EstimateService.$inject = ['$http', '$rootScope', '$q', AuthService.name];
 
 export default {
   name: 'estimateService',
