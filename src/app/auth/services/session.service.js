@@ -1,8 +1,4 @@
 class SessionService {
-  $http;
-  $rootScope;
-  $q;
-  $cookies;
 
   constructor($http, $rootScope, $q, $cookies) {
     this.$http = $http;
@@ -11,16 +7,12 @@ class SessionService {
     this.$cookies = $cookies;
   }
 
-  get isAuthorized() {
-    return !!this.$cookies.get('AuthToken');
-  }
-
-  get token(){ //взять содержимое куки
-    return this.$cookies.get('AuthToken');
-  }
-
-  removeSession() {
-    this.$cookies.remove('AuthToken');
+  checkConnection() {
+    return this.$http.get('/api/check_session',{
+    })
+      .then((moreData)=>{
+        return moreData;
+      });
   }
 }
 

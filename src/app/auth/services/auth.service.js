@@ -17,10 +17,11 @@ class AuthService {
   createHeader() {
     console.log("createHeader");
     return {
-      authorization : "Basic "
+      Authorization : "Basic "
       + btoa(this.user.login + ":" + this.user.pass)
     };
   }
+
   checkUser(login, pass) {
     return this.$http.post('/auth',{
       login : login,

@@ -33,9 +33,8 @@ class LoginComponent {
           this.authService.user.pass = this.pass;
           this.$state.go('layout.address');
         }
-        if(data.data.status == 403) {
-          console.log("403 ошибка");
-          this.authErrors[data.error] = true; // ставим ошибке true
+        if(data.data.error) {
+          this.authErrors[data.data.error] = true; // ставим ошибке true
         }
       })
   }
