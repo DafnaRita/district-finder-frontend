@@ -1,26 +1,22 @@
-function SessionInterceptor($q, $rootScope) {
+function SessionInterceptor($state) {
   return {
     responseError: (error) => {
       switch(error.status){
         case 400:
-          $rootScope.$broadcast('Bad request', error);
-          $rootScope.$broadcast('Stop session', error);
+
         case 401:
-          $rootScope.$broadcast('Unauthorised', error);
-          $rootScope.$broadcast('Stop session', error);
+
         case 403:
-          $rootScope.$broadcast('Forbidden', error);
-          $rootScope.$broadcast('Stop session', error);
+          console.log("403 myError");
+          $state.go('layout.login');
         case 500:
-          $rootScope.$broadcast('Server error', error);
-          $rootScope.$broadcast('Stop session', error);
       }
       return $q.reject(error);
     }
   };
 }
 
-SessionInterceptor.$inject = ['$http', '$rootScope', '$q'];
+SessionInterceptor.$inject = ['$state'];
 
 export default {
   name: 'sessionInterceptor',
