@@ -1,17 +1,19 @@
 div(class="{{::$ctrl.styles.login}}")
-  form(name="auth")
-    md-input-container
+  md-content(class="{{::$ctrl.styles.title}}") District finder
+  form(name="auth")(class="{{::$ctrl.styles.form}}")
+    md-input-container(class="{{::$ctrl.styles.container}}")
       label Логин
       input(ng-model="$ctrl.login" name="login" required="")
       div(ng-messages="auth.login.$error" multiple="" role="alert" md-auto-hide="false")
         div(ng-message="required") Это поле обязательно
         div(ng-if="$ctrl.authErrors.wrongLogin") Не валидный логин
         div(ng-if="$ctrl.authErrors.notExist") Такой пользователь не существует
-    md-input-container
+    md-input-container(class="{{::$ctrl.styles.container}}")
       label Пароль
       input(ng-model="$ctrl.pass" type="password" required="")
       div(ng-messages="auth.login.$error" multiple="" role="alert" md-auto-hide="false")
         div(ng-message="required") Это поле обязательно
         div(ng-if="$ctrl.authErrors.wrongPass") Не валидный пароль
+    div(class="{{::$ctrl.styles.container}}")
+      md-button.md-raised.md-primary(ng-click='$ctrl.signin()') Войти
     a(ui-sref="layout.registration") Не зарегистрированы?
-    md-button.md-raised.md-primary(ng-click='$ctrl.signin()') Войти
