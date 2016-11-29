@@ -11,16 +11,15 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  button {
+    width: 100%;
+  }
 }
 
 .container{
   width: 30vw;
   padding: 7px 5px;
   margin: 0 15px;
-}
-
-button {
-  width: 100%;
 }
 
 .title {
