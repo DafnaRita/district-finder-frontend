@@ -23,6 +23,7 @@ class EstimateService {
   };
 
   northPoint;
+  eastPoint;
   district; //по дефолту у нас Васька
 
   _radius = 500;
@@ -41,6 +42,10 @@ class EstimateService {
 
   setNorthPoint(northPoint) {
     this.northPoint = northPoint;
+  }
+
+  setEastPoint(eastPoint) {
+    this.eastPoint = eastPoint;
   }
 
   setDistrict(district) {
@@ -176,7 +181,8 @@ class EstimateService {
       });
   }
 
-  getMoreInfo(query) {
+  getMoreInfo(query,coords) {
+    console.log(coords[0]," : ",coords[1]);
     console.log("pass and login",
       this.authService.user);
     this.$http.get('/api/get_info', {
@@ -184,14 +190,16 @@ class EstimateService {
         this.authService.user.login,
         this.authService.user.pass),
       params: {
-        lat: query.address[0],
-        lon: query.address[1],
-        type: query.type
+        lng: query.address[0],
+        lat: query.address[1],
+        type: query.type,
+        houseLng: coords[0],
+        houseLat: coords[1]
       }
     })
       .then((moreData)=> {
         const data = moreData.data;
-        this.$rootScope.$broadcast('eventGetMoreInfo', data, query.idPlace);
+        this.$rootScope.$broadcast('eventGetMoreInfo', data, query.idPlace, query.type);
       });
     console.log('отправлено');
     // this.$q.resolve({
@@ -217,6 +225,7 @@ class EstimateService {
       ],
       district: this.district,
       radius: this.radius,
+      eastPoint: this.eastPoint.endPoint,
       northPoint: this.northPoint.endPoint,
       estimateParams: [
         {

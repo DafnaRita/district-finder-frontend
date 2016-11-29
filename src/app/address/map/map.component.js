@@ -61,8 +61,7 @@ class MapComponent {
   }
 
   drawEmptyPlacemark(map, coords) {
-    this.currentHome = new ymaps.Placemark(coords,  {
-      }, {
+    this.currentHome = new ymaps.Placemark(coords, {}, {
         // Запретим замену обычного балуна на балун-панель.
         balloonPanelMaxMapArea: 0,
         draggable: "true",
@@ -76,9 +75,9 @@ class MapComponent {
   }
 
   drawFillPlacemarkCurrentHome(map, coords) {
-      // Создаем шаблон для отображения контента балуна
-      var myBalloonLayout = ymaps.templateLayoutFactory.createClass(
-        `<div class="${this.styles.template}">
+    // Создаем шаблон для отображения контента балуна
+    var myBalloonLayout = ymaps.templateLayoutFactory.createClass(
+      `<div class="${this.styles.template}">
          <h3>Рейтинг дома:</h3>{{properties.ourRating}}</p>
          <div class="${this.styles.item}">Адрес:{{properties.address}}</div>
          <div class="${this.styles.item}">Безопасность района:{{properties.distrRating1}}</div>
@@ -101,11 +100,13 @@ class MapComponent {
               </div>
             {% endfor %} 
           </div>
+          <div class="${this.styles.item}">{{properties.parkingType}} парковка  мест : {{properties.parkingCountPlace}} 
+                  расстояние : {{properties.parkingDistance}} м</div>
        </div>
       `
-      );
+    );
 
-    this.currentHome = new ymaps.Placemark(coords,  {
+    this.currentHome = new ymaps.Placemark(coords, {
         hintContent: "Кликните, чтобы узнать дополнительную информацию"
       }, {
         // Запретим замену обычного балуна на балун-панель.
@@ -146,15 +147,19 @@ class MapComponent {
   drawPlacemarkByType(coords, type) {
     var myBalloonLayout = ymaps.templateLayoutFactory.createClass(
       `<div class="${this.styles.template}">
-         <h3>Название:</h3>{{properties.name}}</p>
-         <div class="${this.styles.item}">Адрес:{{properties.address}}</div>
-         <div class="${this.styles.item}">url:{{properties.url}}</div>
-         <div class="${this.styles.item}">Номер телефона:{{properties.phoneNumber}}</div>
+         [if !("" == properties.name)]<h3>Название:</h3>{{properties.name}}</p>[endif] 
+         [if !("" == properties.address)]<div class="${this.styles.item}">Адрес:{{properties.address}}</div>[endif] 
+         [if !("" == properties.url)]<div class="${this.styles.item}">url:{{properties.url}}</div>[endif] 
+         [if !("" == properties.phoneNumber)]<div class="${this.styles.item}">Номер телефона:{{properties.phoneNumber}}</div>[endif]
+         [if !("" == properties.type)]<div class="${this.styles.item}">Тип:{{properties.type}}</div>[endif] 
+         [if !("" == properties.countPlace)]<div class="${this.styles.item}">Количество мест:{{properties.countPlace}}</div>[endif] 
+         [if !("" == properties.area)]<div class="${this.styles.item}">Площадь:{{properties.area}}</div>[endif] 
+         [if !("" == properties.distance)]<div class="${this.styles.item}">Расстояние:{{properties.distance}}</div>[endif]
        </div>
       `
     );
     return new ymaps.Placemark(coords,
-       {
+      {
         hintContent: 'Кликните, чтобы получить больше информацию',
         balloonContent: 'Тролололо'
       }, {
@@ -174,7 +179,8 @@ class MapComponent {
         // Заставляем балун открываться даже если в нем нет содержимого.
         openEmptyBalloon: false,
         balloonContentLayout: myBalloonLayout,
-        hasBalloon: true});
+        hasBalloon: true
+      });
   }
 
   drawPlacemarkByType2(coords, type, maps) {
@@ -197,7 +203,8 @@ class MapComponent {
         preset: "islands#blueStretchyIcon",
         // Заставляем балун открываться даже если в нем нет содержимого.
         openEmptyBalloon: false,
-        hasBalloon: true}));
+        hasBalloon: true
+      }));
   }
 
   $onInit() {
@@ -228,8 +235,15 @@ class MapComponent {
       this.estimateService.radius);
   }
 
+  getEastPoint() {
+    return this.coordSystem.solveDirectProblem(
+      this.estimateService.getCoordinatesAsArray(),
+      getDirection(Math.PI / 4), // движемся на восток
+      this.estimateService.radius);
+  }
+
   getAreaInformation(coords, kind) {
-    return ymaps.geocode(coords,{//это сново хитрюля промис, не забудь
+    return ymaps.geocode(coords, {//это сново хитрюля промис, не забудь
       skip: 1,
       kind: kind
     }).then((res) => {
@@ -241,9 +255,9 @@ class MapComponent {
       return object.properties.get('name');
 
       /*res.geoObjects.each(function (obj) {
-        console.log('obj!',obj.properties.get('name'));
-        this.district = obj.properties.get('name');
-      });*/
+       console.log('obj!',obj.properties.get('name'));
+       this.district = obj.properties.get('name');
+       });*/
     });
   }
 
@@ -272,12 +286,12 @@ class MapComponent {
   }
 
   addPlacemarkListener(placemark) {
-    placemark.events.add('click',(e) => {
-      console.log("address lat:",this.keyPlacemarksCollection.get(e.get('target')).address[0]);
-      console.log("address lon:",this.keyPlacemarksCollection.get(e.get('target')).address[1]);
-      console.log("type:",this.keyPlacemarksCollection.get(e.get('target')).type);
-      console.log("id:",this.keyPlacemarksCollection.get(e.get('target')).id);
-      this.estimateService.getMoreInfo(this.keyPlacemarksCollection.get(e.get('target')));
+    placemark.events.add('click', (e) => {
+        console.log("address lat:", this.keyPlacemarksCollection.get(e.get('target')).address[0]);
+        console.log("address lon:", this.keyPlacemarksCollection.get(e.get('target')).address[1]);
+        console.log("type:", this.keyPlacemarksCollection.get(e.get('target')).type);
+        console.log("id:", this.keyPlacemarksCollection.get(e.get('target')).id);
+        this.estimateService.getMoreInfo(this.keyPlacemarksCollection.get(e.get('target')), this.coords);
       }
     );
   }
@@ -289,13 +303,14 @@ class MapComponent {
       }
       this.circle.geometry.setRadius(raduis);
       this.estimateService.setNorthPoint(this.getNorthPoint());
+      this.estimateService.setEastPoint(this.getEastPoint());
     });
 
     this.$scope.$on('estimatedArea', (_, data) => {
       this.mapPlacemarkCollection = new ymaps.GeoObjectCollection();
 
       this.map.then((map) => {
-        for(const address of data.infrastructure) {
+        for (const address of data.infrastructure) {
           let placemark = this.drawPlacemarkByType(address.coordinates, address.type);
           this.drawPlacemarkByType2(address.coordinates, address.type, map);
           this.addPlacemarkListener(placemark);
@@ -312,29 +327,63 @@ class MapComponent {
         map.geoObjects.remove(this.currentHome);
 
         this.drawFillPlacemarkCurrentHome(map, this.coords);
-        this.currentHome.properties.set({'ourRating':data.estimate,
-          address:data.address,
-          distrRating1:data.districtRating.safety,
-          distrRating2:data.districtRating.life_quality,
-          distrRating3:data.districtRating.transport_quality,
-          distrRating4:data.districtRating.rest_availability,
-          distrRating5:data.districtRating.parks_availability,
-          stations: data.metro
+        this.currentHome.properties.set({
+          'ourRating': data.estimate,
+          address: data.address,
+          distrRating1: data.districtRating.safety,
+          distrRating2: data.districtRating.life_quality,
+          distrRating3: data.districtRating.transport_quality,
+          distrRating4: data.districtRating.rest_availability,
+          distrRating5: data.districtRating.parks_availability,
+          stations: data.metro,
+          parkingType: data.parkingType,
+          parkingCountPlace: data.parkingCountPlace,
+          parkingDistance : data.parkingDistance
         });
       });
     });
 
-    this.$scope.$on('eventGetMoreInfo', (_, data, idPlace) => {
+    this.$scope.$on('eventGetMoreInfo', (_, data, idPlace, type) => {
       var currentPlacemark = this.mapPlacemarkCollection.get(idPlace);
       console.log(currentPlacemark);
       console.log(idPlace);
       //map.geoObjects.remove(currentPlacemark);
-      currentPlacemark.properties.set({
-        name:data.name,
-        address:data.address,
-        url:data.url,
-        phoneNumber:data.phoneNumber
-      });
+      switch (type) {
+        case 1:
+          break;
+        case 3:
+        case 6:
+        case 7:
+          currentPlacemark.properties.set({
+            name: data.name,
+            address: data.address,
+            url: data.url,
+            phoneNumber: data.phone,
+            distance: data.distance,
+            type:"",
+            countPlace:"",
+            area:""
+          });
+          break;
+        case 8:
+          currentPlacemark.properties.set({
+            name: "",
+            url: "",
+            phoneNumber: "",
+            type: data.type,
+            address: data.address,
+            countPlace: data.countPlace,
+            area: data.area,
+            distance: data.distance
+          });
+          break;
+      }
+      // currentPlacemark.properties.set({
+      //   name: data.name,
+      //   address: data.address,
+      //   url: data.url,
+      //   phoneNumber: data.phoneNumber
+      // });
 
       // this.drawFillBalloon(currentPlacemark);
 
