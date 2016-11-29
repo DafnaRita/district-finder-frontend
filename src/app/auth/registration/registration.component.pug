@@ -1,19 +1,20 @@
 div(class="{{::$ctrl.styles.registration}}")
-  form(name="registration")
-    md-input-container
+  md-content(class="{{::$ctrl.styles.title}}") District finder
+  form(name="registration")(class="{{::$ctrl.styles.form}}")
+    md-input-container(class="{{::$ctrl.styles.container}}")
       label Логин
       input(ng-model="$ctrl.login" required="")
       div(ng-messages="auth.login.$error" multiple="" role="alert" md-auto-hide="false")
         div(ng-message="required") Это поле обязательно
-    md-input-container
+    md-input-container(class="{{::$ctrl.styles.container}}")
       label Пароль
       input(ng-model="$ctrl.pass" type="password" required="")
       div(ng-messages="auth.pass.$error" multiple="" role="alert" md-auto-hide="false")
         div(ng-message="required") Это поле обязательно
         div(ng-if="$ctrl.registrationErrors.notSamePass") Пароли должны совпадать
-    md-input-container
+    md-input-container(class="{{::$ctrl.styles.container}}")
       label Повторите пароль
       input(ng-model="$ctrl.secondPass" type="password" password-match="pass" required="")
       div(ng-messages="auth.pass.$error" multiple="" role="alert" md-auto-hide="false")
         div(ng-message="required") Это поле обязательно
-    md-button.md-raised.md-primary(ng-click='$ctrl.select()') Зарегистрироваться
+    md-button.md-raised.md-primary(ng-click='$ctrl.select()')(class="{{::$ctrl.styles.container}}") Зарегистрироваться

@@ -11,6 +11,7 @@ function NgMaterialTheming($mdThemingProvider) {
 NgMaterialTheming.$inject = ['$mdThemingProvider'];
 
 function checkAccess($rootScope, $state, $transitions, sessionService) {
+
   /*$transitions.onEnter({to: 'layout.**'}, (transitions) => {
     if(!sessionService.isAuthorized) {
       if(transitions.to().name === 'layout.login') {

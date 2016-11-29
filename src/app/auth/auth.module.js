@@ -6,10 +6,13 @@ import {RegistrationComponent} from './registration';
 import {SessionService} from './services';
 import {AuthService} from './services';
 import ngMessages from 'angular-messages';
+import SessionInterceptor from './services/session.interceptor';
+
 
 export default angular.module('AuthModule', [NgMaterialModule, NgCookie, ngMessages])
   .component(LoginComponent.name, LoginComponent.instance)
   .component(RegistrationComponent.name, RegistrationComponent.instance)
   .service(SessionService.name, SessionService.instance)
   .service(AuthService.name, AuthService.instance)
+  .factory(SessionInterceptor.name, SessionInterceptor.instance)
   .name;
